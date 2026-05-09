@@ -1,0 +1,29 @@
+{
+  "name": "linalg-from-scratch",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "twxs.cmake",
+        "charliermarsh.ruff",
+        "tamasfe.even-better-toml"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/bin/python3",
+        "cmake.configureOnOpen": false,
+        "cmake.buildDirectory": "${workspaceFolder}/cpp/build"
+      }
+    }
+  },
+  "postCreateCommand": "bash -lc 'cd python && uv sync || true; cd ../cpp && cmake -B build -S . || true'",
+  "remoteUser": "vscode"
+}

@@ -1,0 +1,28 @@
+[project]
+name = "matrix-from-scratch"
+version = "0.1.0"
+description = "Build your own Matrix class — Lecture 5 D5 deep-dive"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=2.0",
+  "matplotlib>=3.8",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.4",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-q --tb=short"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]

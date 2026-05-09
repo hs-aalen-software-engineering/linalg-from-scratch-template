@@ -1,0 +1,36 @@
+name: cpp-tests
+
+on:
+  push:
+    paths:
+      - "cpp/**"
+      - ".github/workflows/cpp-tests.yml"
+  pull_request:
+    paths:
+      - "cpp/**"
+      - ".github/workflows/cpp-tests.yml"
+  workflow_dispatch:
+
+jobs:
+  ctest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cpp
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build libeigen3-dev
+
+      - name: Configure
+        run: cmake -B build -S . -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure

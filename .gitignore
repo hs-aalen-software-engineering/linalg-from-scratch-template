@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+.uv/
+
+# C++ build
+cpp/build/
+cpp/_deps/
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.exe
+
+# Editor / OS
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Generated benchmark artifacts (keep CSVs you commit, ignore noise)
+results/*.png
+results/*.svg
+!results/.gitkeep
+
+# Notebook checkpoints
+.ipynb_checkpoints/
