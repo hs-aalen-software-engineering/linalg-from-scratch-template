@@ -8,7 +8,7 @@ If you'd rather not touch your system at all, the [Devcontainer fallback](#fallb
 
 | Tool | Used for | How you'll install it |
 | --- | --- | --- |
-| Python ≥ 3.11 + `uv` | the Python half | already done in the course |
+| Python ≥ 3.12 + `uv` | the Python half | see [Step 1](#step-1--confirm-python-and-uv) if you skipped the earlier course setup |
 | A C++17 compiler | the C++ half | MSYS2 (recommended) or Visual Studio Build Tools |
 | CMake ≥ 3.20 | configures and builds | comes with MSYS2 or VS Build Tools |
 | Ninja | fast parallel builds | comes with MSYS2 or VS Build Tools |
@@ -21,11 +21,39 @@ You do **not** need to install Eigen or Catch2 yourself. CMake's [`FetchContent`
 Open PowerShell and run:
 
 ```powershell
-python --version    # expect 3.11 or newer
+python --version    # expect 3.12 or newer — pyproject.toml requires >=3.12
 uv --version
 ```
 
-Both should print a version. If they don't, follow the course's earlier Python setup notes.
+If both print a version **and Python is 3.12 or newer**, skip to Step 2. Otherwise install what's missing — both pieces are quick.
+
+> **Watch out for the Windows Store Python stub.** A fresh Windows install ships a `python.exe` that, when run, opens the Store rather than running an interpreter. If `python --version` opened the Store (or printed nothing), that's the stub — you don't have a real Python yet. Either install a real one via `uv` below (recommended), or open *Settings → Apps → Advanced app settings → App execution aliases* and turn off both "App Installer (python.exe / python3.exe)" entries so the stub stops intercepting.
+
+### Install `uv` (if missing)
+
+The simplest option uses `winget`, which ships with Windows 10/11:
+
+```powershell
+winget install --id astral-sh.uv -e
+```
+
+If `winget` isn't available (older Windows, locked-down machine), use the official PowerShell installer instead:
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+**Close every PowerShell window and reopen one** — the `PATH` change does not reach already-open sessions. Then verify `uv --version` prints a version.
+
+### Install Python 3.12 through `uv` (if missing or too old)
+
+You do **not** need to install Python from python.org or the Microsoft Store. `uv` ships its own downloader that installs hermetic interpreters under `%LOCALAPPDATA%\uv\python\` — they don't touch any system Python you already have:
+
+```powershell
+uv python install 3.12
+```
+
+That's it. Later in this guide, `uv sync` (run from the repo's `python\` directory) reads `requires-python = ">=3.12"` from [`pyproject.toml`](../python/pyproject.toml) and automatically picks the interpreter `uv` just installed. You do not need to set `PATH` or activate anything — `uv run` always uses the right interpreter for the project.
 
 ## Step 2 — Install a C++ toolchain
 

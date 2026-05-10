@@ -17,6 +17,7 @@ You have used `np.matmul` happily for several notebooks. This assignment forces 
 1. **Click the GitHub Classroom invitation link** (provided on the course site) and clone the repo locally.
 2. **Set up your machine** by following the OS-specific guide once — 10–15 minutes:
    - [Windows native setup](docs/setup-windows.md) (MSYS2 + mingw-w64, or Visual Studio Build Tools)
+   - [macOS native setup](docs/setup-macos.md) (Homebrew + Apple Clang, Apple Silicon or Intel)
    - [Ubuntu / Linux native setup](docs/setup-ubuntu.md) (also covers WSL2)
 
    You already have Python and `uv` from earlier in the course; the guides only add a C++ toolchain (g++/MSVC, CMake, Ninja). Eigen and Catch2 are fetched automatically by CMake — you don't install them yourself.

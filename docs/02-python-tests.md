@@ -24,18 +24,47 @@ Useful features you'll see in `tests/test_matrix.py`:
 - `pytest.raises(SomeError)` — expect an exception
 - `@pytest.mark.parametrize("x", [1, 2, 3])` — same test, multiple inputs
 - `@pytest.mark.<name>` — *markers*, custom labels you can filter by. The skeleton uses `@pytest.mark.ch1` and `@pytest.mark.ch3` so you can run just one chapter's tests at a time. Marker names must be registered in `pyproject.toml` under `[tool.pytest.ini_options]` (otherwise pytest warns).
-- Command-line flags: `-v` (verbose), `-k <pattern>` (filter by name), `-m <expr>` (filter by marker), `--lf` (only the tests that failed last time).
+- Command-line flags: `-v` (verbose), `-s` (show `print()` output — pytest captures stdout by default), `-k <pattern>` (filter by name), `-m <expr>` (filter by marker), `--lf` (only the tests that failed last time).
 
 ```bash
 cd python
 uv run pytest -v                       # everything
+uv run pytest -v -s                    # also show print() output from passing tests
 uv run pytest -v -m ch1                # only chapter-1 tests
 uv run pytest -v -m "ch1 or ch3"       # union of two markers
 uv run pytest -v -k transpose          # only tests with "transpose" in the name
 uv run pytest -v --lf                  # only the previously failing tests
 ```
 
+> **Why your `print()` calls "disappear."** By default, pytest captures each test's stdout into an internal buffer and only shows it if the test *fails* — the reasoning is that a passing test produced no output worth reading. When you're debugging by sprinkling `print()` calls (or running [`tests/test_experiments.py`](../python/tests/test_experiments.py) with its `dump_raw` calls), passing tests will look silent until you pass `-s`. The flag is short for `--capture=no`; it turns capture off completely so prints appear live as the tests run. If you ever need only *some* output and find `-s` too noisy, `--capture=tee-sys` shows prints *and* still attaches them to failure reports — but `-s` is the one to remember.
+
 The `-m` and `-k` flags compose: `-v -m ch3 -k matmul` runs chapter-3-tagged tests whose name contains "matmul."
+
+### Narrowing to a single file or test
+
+Markers and `-k` filter *after* pytest has collected every test in `testpaths`. When you're iterating on one file, point pytest straight at the path instead — collection is faster and the output stays focused on what you care about.
+
+```bash
+cd python
+uv run pytest tests/test_experiments.py -v                       # everything in one file
+uv run pytest tests/test_matrix.py::test_transpose_involution -v # one specific test
+uv run pytest tests/test_matrix.py tests/test_experiments.py -v  # several files at once
+```
+
+The `path::test_name` form is a **nodeid** — pytest's internal address for a test. `--collect-only` prints all nodeids without running anything, which is handy when you can't remember an exact name:
+
+```bash
+uv run pytest --collect-only -q                # list every nodeid
+uv run pytest --collect-only -q tests/test_matrix.py    # just one file's nodeids
+```
+
+For a `@pytest.mark.parametrize`d test, the nodeid includes the case in brackets — quote it because `[` and `]` are shell metacharacters:
+
+```bash
+uv run pytest "tests/test_matrix.py::test_matmul_agrees[3x3]" -v
+```
+
+Path selection composes with everything else: `uv run pytest tests/test_matrix.py -m ch3 -k transpose` runs chapter-3 transpose tests *in that file only*. Reach for path filtering first when you know which file you're working on, and add `-k`/`-m` on top only if the file is large.
 
 ## Why tests live in their own file
 

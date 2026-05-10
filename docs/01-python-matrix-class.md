@@ -2,6 +2,8 @@
 
 **Goal**: implement the basic operations of [`python/matrix/matrix.py`](../python/matrix/matrix.py) so the existing tests pass — except the matmul tests, which come in chapter 3.
 
+> **Companion lecture:** [Appendix A — Linear Algebra to Code](https://l3gj0n.github.io/ai_supported_software_development_hs_aalen/en/2026/05/11/appendix-a-linear-algebra-to-code/) walks through the same mapping from mathematical matrix notation to a row-major flat data layout. Read it alongside this chapter if you want the background spelled out before you start implementing.
+
 ## The shape contract
 
 A `Matrix` has a shape `(rows, cols)` and a flat row-major data array of length `rows * cols`. The element at logical position `(i, j)` lives at flat position `data[i * cols + j]`. This is the same layout NumPy uses by default, the same layout the C++ skeleton uses, and the same layout BLAS expects.

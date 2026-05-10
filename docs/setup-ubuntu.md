@@ -10,7 +10,7 @@ If you'd rather not touch your system at all, the [Devcontainer fallback](#fallb
 
 | Tool | Used for | Apt package |
 | --- | --- | --- |
-| Python ≥ 3.11 + `uv` | the Python half | already done in the course |
+| Python ≥ 3.12 + `uv` | the Python half | see [Step 1](#step-1--confirm-python-and-uv) if you skipped the earlier course setup |
 | g++ ≥ 11 | the C++ half | `build-essential` |
 | CMake ≥ 3.20 | configures and builds | `cmake` |
 | Ninja | fast parallel builds | `ninja-build` |
@@ -22,11 +22,31 @@ If you'd rather not touch your system at all, the [Devcontainer fallback](#fallb
 ## Step 1 — Confirm Python and `uv`
 
 ```bash
-python3 --version    # expect 3.11 or newer
+python3 --version    # expect 3.12 or newer — pyproject.toml requires >=3.12
 uv --version
 ```
 
-Both should print a version. If they don't, follow the course's earlier Python setup notes.
+If both print a version **and Python is 3.12 or newer**, skip to Step 2. Otherwise install what's missing — both pieces are quick.
+
+### Install `uv` (if missing)
+
+`uv` is a single static binary; the official installer drops it into `~/.local/bin/` and adds that to your `PATH`:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Restart the shell (or `source ~/.bashrc` / `~/.zshrc`) so the new `PATH` takes effect, then re-check `uv --version`. If you prefer not to `curl | sh`, the alternatives — `pipx install uv`, the Debian/Ubuntu `.deb` from <https://github.com/astral-sh/uv/releases>, or distro packages — are listed at <https://docs.astral.sh/uv/getting-started/installation/>.
+
+### Install Python 3.12 through `uv` (if missing or too old)
+
+You do **not** need to upgrade your system Python (don't `apt install python3.12` unless you want to). `uv` ships its own downloader that installs hermetic interpreters under `~/.local/share/uv/python/` — they coexist with whatever the system already has:
+
+```bash
+uv python install 3.12
+```
+
+That's it. Later in this guide, `uv sync` (run from the repo's `python/` directory) reads `requires-python = ">=3.12"` from [`pyproject.toml`](../python/pyproject.toml) and automatically picks the interpreter `uv` just installed. You don't need to point at it manually. Your system `python3` keeps doing whatever it did before — uv's interpreter is private to projects that ask for it.
 
 ## Step 2 — Install the C++ toolchain
 

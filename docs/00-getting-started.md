@@ -29,6 +29,7 @@ You already have Python and `uv` from earlier in the course. The C++ half needs 
 Pick the guide for your OS and follow it once:
 
 - [**Windows native setup**](setup-windows.md) — MSYS2 + mingw-w64 (recommended) or Visual Studio Build Tools.
+- [**macOS native setup**](setup-macos.md) — Homebrew + Apple Clang (or GCC). Works on Apple Silicon and Intel.
 - [**Ubuntu / Linux native setup**](setup-ubuntu.md) — `apt install build-essential cmake ninja-build`. Same guide covers WSL2.
 
 Both guides take 10–15 minutes and end with the same verification commands.
