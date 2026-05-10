@@ -9,16 +9,13 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-python.python",
-        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
         "ms-vscode.cpptools",
         "ms-vscode.cmake-tools",
         "twxs.cmake",
-        "charliermarsh.ruff",
         "tamasfe.even-better-toml"
       ],
       "settings": {
-        "python.defaultInterpreterPath": "/usr/bin/python3",
         "cmake.configureOnOpen": false,
         "cmake.buildDirectory": "${workspaceFolder}/cpp/build"
       }

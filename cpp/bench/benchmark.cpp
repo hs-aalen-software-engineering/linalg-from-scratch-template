@@ -1,4 +1,4 @@
-// Benchmark the three C++ matmul variants (ijk, ikj, eigen).
+// Benchmark the four C++ matmul variants (entrywise, columnwise, outerproduct, eigen).
 //
 // Run from cpp/:
 //   cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build
@@ -79,14 +79,19 @@ int main() {
   const std::vector<std::size_t> sizes = {16, 32, 64, 128, 256, 512, 1024};
   const int runs = 5;
 
-  std::cerr << "[matmul_ijk]\n";
+  std::cerr << "[matmul_entrywise]\n";
   for (auto n : sizes) {
-    bench("matmul_ijk", n, &Matrix::matmul_ijk, runs);
+    bench("matmul_entrywise", n, &Matrix::matmul_entrywise, runs);
   }
 
-  std::cerr << "[matmul_ikj]\n";
+  std::cerr << "[matmul_columnwise]\n";
   for (auto n : sizes) {
-    bench("matmul_ikj", n, &Matrix::matmul_ikj, runs);
+    bench("matmul_columnwise", n, &Matrix::matmul_columnwise, runs);
+  }
+
+  std::cerr << "[matmul_outerproduct]\n";
+  for (auto n : sizes) {
+    bench("matmul_outerproduct", n, &Matrix::matmul_outerproduct, runs);
   }
 
   std::cerr << "[matmul_eigen]\n";

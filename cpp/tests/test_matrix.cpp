@@ -29,11 +29,12 @@ TEST_CASE("zeros has the requested shape and is all zero", "[basic]") {
   }
 }
 
-TEST_CASE("eye is the multiplicative identity for matmul_ijk", "[basic]") {
+TEST_CASE("eye is the multiplicative identity for matmul", "[basic]") {
   const std::size_t n = 5;
   auto I = Matrix::eye(n);
   auto A = Matrix::random(n, n, /*seed=*/42);
-  REQUIRE(I.matmul_ijk(A) == A);
+  // Exercise the columnwise variant by default — mirrors Python's __matmul__.
+  REQUIRE(I.matmul_columnwise(A) == A);
 }
 
 TEST_CASE("setitem then getitem round-trip", "[basic]") {
@@ -68,7 +69,7 @@ TEST_CASE("slice gives an independent copy", "[basic]") {
 }
 
 // ----------------------------------------------------------------------
-// Chapter 7 — three matmul variants
+// Chapter 7 — vector-space primitives, matvec, three matmul views
 // ----------------------------------------------------------------------
 
 namespace {
@@ -89,41 +90,50 @@ KnownProduct small_known_product() {
 
 }  // namespace
 
-TEST_CASE("matmul_ijk matches the known small product", "[matmul]") {
+TEST_CASE("matmul_entrywise matches the known small product", "[matmul]") {
   auto kp = small_known_product();
-  REQUIRE(kp.A.matmul_ijk(kp.B) == kp.C);
+  REQUIRE(kp.A.matmul_entrywise(kp.B) == kp.C);
 }
 
-TEST_CASE("matmul_ikj matches the known small product", "[matmul]") {
+TEST_CASE("matmul_columnwise matches the known small product", "[matmul]") {
   auto kp = small_known_product();
-  REQUIRE(kp.A.matmul_ikj(kp.B) == kp.C);
+  REQUIRE(kp.A.matmul_columnwise(kp.B) == kp.C);
 }
 
-TEST_CASE("matmul_eigen matches the known small product", "[matmul]") {
+TEST_CASE("matmul_outerproduct matches the known small product", "[matmul]") {
   auto kp = small_known_product();
-  REQUIRE(kp.A.matmul_eigen(kp.B) == kp.C);
+  REQUIRE(kp.A.matmul_outerproduct(kp.B) == kp.C);
 }
 
-TEST_CASE("the three variants agree on random matrices", "[matmul]") {
+TEST_CASE("the three hand-written variants agree on random matrices", "[matmul]") {
   auto A = Matrix::random(6, 4, /*seed=*/11);
   auto B = Matrix::random(4, 5, /*seed=*/22);
-  auto c1 = A.matmul_ijk(B);
-  auto c2 = A.matmul_ikj(B);
-  auto c3 = A.matmul_eigen(B);
+  auto c1 = A.matmul_entrywise(B);
+  auto c2 = A.matmul_columnwise(B);
+  auto c3 = A.matmul_outerproduct(B);
   REQUIRE(c1 == c2);
   REQUIRE(c2 == c3);
+}
+
+TEST_CASE("each hand-written variant agrees with Eigen on random matrices", "[matmul]") {
+  auto A = Matrix::random(8, 6, /*seed=*/4);
+  auto B = Matrix::random(6, 7, /*seed=*/5);
+  auto target = A.matmul_eigen(B);
+  REQUIRE(A.matmul_entrywise(B) == target);
+  REQUIRE(A.matmul_columnwise(B) == target);
+  REQUIRE(A.matmul_outerproduct(B) == target);
 }
 
 TEST_CASE("matmul shape mismatch throws", "[matmul]") {
   auto A = Matrix::zeros(2, 3);
   auto B = Matrix::zeros(4, 5);
-  REQUIRE_THROWS_AS(A.matmul_ijk(B), std::invalid_argument);
+  REQUIRE_THROWS_AS(A.matmul_entrywise(B), std::invalid_argument);
 }
 
 TEST_CASE("matrix-vector via matmul (column vector)", "[matmul]") {
   auto A = Matrix::from_rows({{1, 2}, {3, 4}});
   auto x = Matrix::from_rows({{5}, {6}});  // (2, 1)
-  auto y = A.matmul_ijk(x);
+  auto y = A.matmul_entrywise(x);
   REQUIRE(y.rows() == 2);
   REQUIRE(y.cols() == 1);
   REQUIRE(y == Matrix::from_rows({{17}, {39}}));
@@ -133,8 +143,8 @@ TEST_CASE("associativity holds across variants", "[matmul]") {
   auto A = Matrix::random(3, 4, /*seed=*/1);
   auto B = Matrix::random(4, 5, /*seed=*/2);
   auto C = Matrix::random(5, 2, /*seed=*/3);
-  auto left = A.matmul_ijk(B).matmul_ijk(C);
-  auto right = A.matmul_ijk(B.matmul_ijk(C));
+  auto left = A.matmul_entrywise(B).matmul_entrywise(C);
+  auto right = A.matmul_entrywise(B.matmul_entrywise(C));
   REQUIRE(left == right);
 }
 
@@ -147,7 +157,7 @@ TEST_CASE("cat-sat-on-it scores match the lecture", "[lecture]") {
   auto q = Matrix::from_rows({{1.0, 0.0}});
   auto K = Matrix::from_rows({{3.0, 0.0}, {5.0, 0.0}, {4.0, 0.0}, {2.0, 0.0}, {6.0, 0.0}});
 
-  auto scores = q.matmul_ijk(K.transpose());
+  auto scores = q.matmul_entrywise(K.transpose());
   REQUIRE(scores.rows() == 1);
   REQUIRE(scores.cols() == 5);
   const std::vector<double> expected = {3.0, 5.0, 4.0, 2.0, 6.0};

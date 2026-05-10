@@ -9,8 +9,8 @@ __pycache__/
 venv/
 .uv/
 
-# C++ build
-cpp/build/
+# C++ build — matches cpp/build, cpp/build-O0, cpp/build-O2, cpp/build-O3, ...
+cpp/build*/
 cpp/_deps/
 *.o
 *.obj
@@ -27,7 +27,12 @@ cpp/_deps/
 .DS_Store
 Thumbs.db
 
-# Generated benchmark artifacts (keep CSVs you commit, ignore noise)
+# Claude Code session metadata
+.claude/
+
+# Generated benchmark artifacts (CSVs are hardware-specific; plots are derived).
+# If you want to commit your run intentionally, use `git add -f`.
+results/*.csv
 results/*.png
 results/*.svg
 !results/.gitkeep

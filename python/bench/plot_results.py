@@ -9,8 +9,6 @@ Run from the python/ directory:
 Reads any CSV files matching results/*.csv and merges them. Each CSV must have
 columns: variant,size,time_ms,peak_kb,runs.
 """
-from __future__ import annotations
-
 import csv
 import sys
 from pathlib import Path

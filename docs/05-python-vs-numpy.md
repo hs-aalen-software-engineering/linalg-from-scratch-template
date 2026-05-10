@@ -2,7 +2,7 @@
 
 **Goal**: explain (in writing) why your best pure-Python matmul is 100–1000× slower than `numpy.matmul` for the same algorithmic complexity.
 
-This chapter is short on doing and long on thinking. The doing part is one extra plot panel. The thinking part is what you'll write in `ai_diary.md`.
+This chapter is short on doing and long on thinking. The doing part is one extra plot panel. The thinking part is worth writing down somewhere — [`your_results.md`](../your_results.md) has a Q3 stub if you want a template, or use any notebook.
 
 ## The headline number
 
@@ -24,9 +24,9 @@ NumPy isn't fast because of one trick. It's the cumulative effect of four engine
 
 There are smaller things too — branch prediction, memory alignment, multi-threading via OpenMP for big sizes — but those four explain most of the gap.
 
-## What to write
+## What to write down
 
-Open `ai_diary.md`. Fill in **Q3**: NumPy vs your best Python matmul, and the three things NumPy does that you don't. Use the four reasons above as a starting point but make your wording yours, not theirs. List actual numbers from your CSV.
+Pick the format you like (the Q3 stub in [`your_results.md`](../your_results.md), a notebook, anywhere) and capture: the NumPy-vs-best-Python speedup factor at `n = 256` from your CSV, and three of the four reasons above in your own words. The point isn't the artifact — it's that explaining the gap forces you to commit to a model of *why*, which a passive read of these docs doesn't.
 
 You don't need to update the plot for this chapter — it already shows NumPy on the same axes. Take a moment to look at it. A log–log plot makes a 1000× gap into a fixed vertical offset; if your NumPy line is roughly parallel to your `entrywise` line but two decades below it, that's the picture.
 
@@ -34,4 +34,6 @@ You don't need to update the plot for this chapter — it already shows NumPy on
 
 If you want to verify reason 1 (interpreter overhead), measure how long pure Python takes to execute *just* the indexing — no math. Replace the inner sum in `matmul_entrywise` with `_ = self[i, p] + other[p, j]` and time it. The number will be close to your matmul time, because the *math* in your matmul is essentially free; the *overhead* is everything.
 
-→ Continue with [06 — C++ Matrix class](06-cpp-matrix-class.md)
+→ Continue with [5b — Building and testing C++ projects: a primer](05b-cpp-build-system.md)
+
+That primer is short and read-only — no exercises. It explains CMake, Ninja, FetchContent, and Catch2 *before* you touch them in chapter 6, so the build commands in chapters 6–9 read as something you understand rather than something you copy-paste.

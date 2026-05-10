@@ -35,15 +35,25 @@ if(NOT Eigen3_FOUND)
   FetchContent_MakeAvailable(Eigen3)
 endif()
 
-# -- The student-written Matrix library (header-only) ----------------------
-add_library(matrix INTERFACE)
-target_include_directories(matrix INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(matrix INTERFACE Eigen3::Eigen)
-target_compile_features(matrix INTERFACE cxx_std_17)
+# -- The student-written Matrix library ------------------------------------
+# Declarations in include/matrix.hpp, definitions in src/matrix.cpp.
+# matrix_debug.{hpp,cpp} provides dump_raw / memory_bytes — mirrors of
+# python/matrix/debug.py — used by tests/test_experiments.cpp.
+# - PUBLIC include path: consumers (tests, benchmark) include "matrix.hpp".
+# - PRIVATE Eigen link: only src/matrix.cpp needs Eigen, so consumers don't
+#   pay for its headers when they include matrix.hpp.
+add_library(matrix STATIC src/matrix.cpp src/matrix_debug.cpp)
+target_include_directories(matrix PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(matrix PRIVATE Eigen3::Eigen)
+target_compile_features(matrix PUBLIC cxx_std_17)
 
 # -- Tests -----------------------------------------------------------------
+# Both test files compile into the single test_matrix executable; Catch2
+# discovers all TEST_CASEs across both. Tag filters (e.g. [experiments],
+# [basic], [matmul]) work via the binary directly; ctest -R filters by
+# test name. See docs/06 for the tag table.
 enable_testing()
-add_executable(test_matrix tests/test_matrix.cpp)
+add_executable(test_matrix tests/test_matrix.cpp tests/test_experiments.cpp)
 target_link_libraries(test_matrix PRIVATE matrix Catch2::Catch2WithMain)
 
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)

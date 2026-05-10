@@ -16,7 +16,6 @@ Notes:
   buffers are not fully tracked by tracemalloc — read the printout with
   that caveat. For a fair memory comparison, look at the C++ numbers.
 """
-from __future__ import annotations
 
 import csv
 import statistics
@@ -29,7 +28,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from matrix import Matrix  # noqa: E402
-
 
 # Sizes per variant. Pure-Python triple loops are slow — keep their max small.
 SIZES = {

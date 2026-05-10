@@ -1,19 +1,20 @@
 """
 Unit tests for the Matrix class.
 
-These run with `uv run pytest -v` from the python/ directory. The tests
-are written so that, with a correct implementation, all tests pass; with an
-unfinished implementation, the test name in the failure tells you which
-TODO to revisit.
+See docs/02-python-tests.md for the why and how — what unit tests are,
+why this file lives next to (not inside) the matrix package, and how
+`from matrix import Matrix` resolves without an explicit install. Each
+test below is tagged with `@pytest.mark.ch1` or `@pytest.mark.ch3` so
+you can filter by chapter (e.g., `uv run pytest -m ch1`).
 
-Cat-sat-on-it reference: the lecture's softmax weights for that example are
-[0.12, 0.40, 0.16, 0.11, 0.20]. We use those numbers directly so what you
-saw in lecture is what your tests assert.
+Cat-sat-on-it reference: the lecture's softmax weights for that example
+are [0.12, 0.40, 0.16, 0.11, 0.20]. We use those numbers directly so
+what you saw in lecture is what your tests assert.
 
 Students: feel free to add your own tests. Pytest discovers any function
-whose name starts with "test_".
+whose name starts with "test_". When you add one, pick the chapter
+marker that matches what the test is checking.
 """
-from __future__ import annotations
 
 import math
 
@@ -21,12 +22,12 @@ import pytest
 
 from matrix import Matrix
 
-
 # ----------------------------------------------------------------------
 # Chapter 1 — basic operations
 # ----------------------------------------------------------------------
 
 
+@pytest.mark.ch1
 def test_construction_zeros():
     m = Matrix.zeros(2, 3)
     assert m.shape == (2, 3)
@@ -35,6 +36,7 @@ def test_construction_zeros():
             assert m[i, j] == 0.0
 
 
+@pytest.mark.ch1
 def test_construction_eye_is_identity_for_matmul():
     n = 5
     I = Matrix.eye(n)
@@ -43,6 +45,7 @@ def test_construction_eye_is_identity_for_matmul():
     assert I @ A == A
 
 
+@pytest.mark.ch1
 def test_setitem_then_getitem():
     m = Matrix.zeros(3, 3)
     m[1, 2] = 7.5
@@ -50,11 +53,13 @@ def test_setitem_then_getitem():
     assert m[0, 0] == 0.0
 
 
+@pytest.mark.ch1
 def test_from_rows_shape_mismatch_raises():
     with pytest.raises(ValueError):
         Matrix.from_rows([[1, 2, 3], [4, 5]])
 
 
+@pytest.mark.ch1
 def test_repr_round_trip_is_readable():
     m = Matrix.from_rows([[1.0, 2.0], [3.0, 4.0]])
     s = repr(m)
@@ -63,17 +68,20 @@ def test_repr_round_trip_is_readable():
         assert token in s
 
 
+@pytest.mark.ch1
 def test_transpose_involution():
     A = Matrix.random(4, 7, seed=1)
     assert A.transpose().transpose() == A
 
 
+@pytest.mark.ch1
 def test_transpose_swaps_shape():
     A = Matrix.zeros(2, 5)
     AT = A.transpose()
     assert AT.shape == (5, 2)
 
 
+@pytest.mark.ch1
 def test_slice_returns_independent_data():
     A = Matrix.from_rows([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     S = A.slice((0, 2), (1, 3))
@@ -106,6 +114,7 @@ def _small_known_product():
     return A, B, C
 
 
+@pytest.mark.ch3
 @pytest.mark.parametrize(
     "method_name", ["matmul_entrywise", "matmul_columnwise", "matmul_outerproduct"]
 )
@@ -115,6 +124,7 @@ def test_each_variant_matches_known_product(method_name: str):
     assert result == C
 
 
+@pytest.mark.ch3
 def test_three_variants_agree_random():
     """Exercise 6.4 of the theory: three views are equivalent. Now verify it."""
     A = Matrix.random(6, 4, seed=11)
@@ -126,6 +136,7 @@ def test_three_variants_agree_random():
     assert c2 == c3
 
 
+@pytest.mark.ch3
 def test_matmul_shape_mismatch_raises():
     A = Matrix.zeros(2, 3)
     B = Matrix.zeros(4, 5)  # 3 != 4
@@ -133,6 +144,7 @@ def test_matmul_shape_mismatch_raises():
         A.matmul_entrywise(B)
 
 
+@pytest.mark.ch3
 def test_matrix_vector_via_matmul():
     """Vectors are matrices: A @ x for column-vector x is a column-vector."""
     A = Matrix.from_rows([[1, 2], [3, 4]])
@@ -142,6 +154,7 @@ def test_matrix_vector_via_matmul():
     assert y == Matrix.from_rows([[1 * 5 + 2 * 6], [3 * 5 + 4 * 6]])
 
 
+@pytest.mark.ch3
 def test_associativity_with_random_matrices():
     """(A B) C == A (B C) — matmul is associative. Holds across all variants."""
     A = Matrix.random(3, 4, seed=1)
@@ -157,6 +170,7 @@ def test_associativity_with_random_matrices():
 # ----------------------------------------------------------------------
 
 
+@pytest.mark.ch3
 def test_each_variant_agrees_with_numpy():
     A = Matrix.random(8, 6, seed=4)
     B = Matrix.random(6, 7, seed=5)
@@ -171,6 +185,7 @@ def test_each_variant_agrees_with_numpy():
 # ----------------------------------------------------------------------
 
 
+@pytest.mark.ch3
 def test_softmax_dotproduct_reference_weights():
     """
     Lecture 5 Chapter 7: softmax of scores Q[i] @ K[j]^T / sqrt(d_k) for the

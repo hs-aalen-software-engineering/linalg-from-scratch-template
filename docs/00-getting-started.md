@@ -19,23 +19,21 @@ cpp/include/          Matrix.hpp skeleton with TODOs (Part B)
 cpp/tests/            Catch2 tests
 cpp/bench/            chrono-based benchmark
 results/              your CSVs and plots land here
-ai_diary.md           the deliverable
+your_results.md       optional template for recording your benchmark numbers
 ```
 
-## Open in the Devcontainer
+## Set up your environment
 
-The repo ships with a Devcontainer that pre-installs Python, `uv`, g++, CMake, Eigen, and Catch2. You don't need to install anything yourself.
+You already have Python and `uv` from earlier in the course. The C++ half needs a compiler, CMake, and Ninja. Install them natively — there's no container to wait for and no Docker daemon to keep running.
 
-**In a Codespace** (recommended, free tier covers this):
-1. On the repo's GitHub page, press `.` (dot) to open the web editor, then `Ctrl/Cmd+Shift+P` → "Codespaces: Create codespace on main".
-2. The Devcontainer builds automatically. Wait for the build to finish (≈ 3 min the first time).
+Pick the guide for your OS and follow it once:
 
-**Locally** (VS Code with the *Dev Containers* extension):
-1. Clone the repo.
-2. Open the folder in VS Code.
-3. When VS Code prompts "Reopen in Container", say yes. (If it doesn't, `Ctrl+Shift+P` → "Dev Containers: Reopen in Container".)
+- [**Windows native setup**](setup-windows.md) — MSYS2 + mingw-w64 (recommended) or Visual Studio Build Tools.
+- [**Ubuntu / Linux native setup**](setup-ubuntu.md) — `apt install build-essential cmake ninja-build`. Same guide covers WSL2.
 
-You're set up correctly when:
+Both guides take 10–15 minutes and end with the same verification commands.
+
+You're set up correctly when, from the repo root:
 
 ```bash
 cd python && uv sync && uv run pytest -v
@@ -48,6 +46,8 @@ cd cpp && cmake -B build -S . && cmake --build build && ctest --test-dir build
 ```
 
 builds successfully and shows tests failing for the same reason. Failing tests this early is good — it means everything compiles.
+
+> **Devcontainer fallback.** The repo still ships a [Devcontainer](../.devcontainer/devcontainer.json) with everything pre-installed. It needs Docker (or a GitHub Codespace). Use it only if the native setup didn't work for you — see the *Fallback* section at the bottom of either OS guide.
 
 ## How to work
 
